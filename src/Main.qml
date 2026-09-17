@@ -289,19 +289,19 @@ ApplicationWindow {
     }
 
     Shortcut {
-        sequences: ["Ctrl+Shift++", "Ctrl+Shift+="]
+        sequence: "Ctrl+}"
         context: Qt.ApplicationShortcut
         onActivated: win.widthBy(0.05)
     }
 
     Shortcut {
-        sequence: "Ctrl+Shift+-"
+        sequence: "Ctrl+{"
         context: Qt.ApplicationShortcut
         onActivated: win.widthBy(-0.05)
     }
 
     Shortcut {
-        sequence: "Ctrl+Shift+0"
+        sequence: "Ctrl+|"
         context: Qt.ApplicationShortcut
         onActivated: win.widthReset()
     }
@@ -400,7 +400,7 @@ ApplicationWindow {
         standardButtons: Dialog.Close
         anchors.centerIn: parent
         contentItem: Label {
-            text: "Ctrl+S  Save\nCtrl+Shift+S  Save As\nCtrl+O  Open\nCtrl+N  New Window\nCtrl+F  Find\nCtrl+H  Find and Replace\nCtrl+B  Bold\nCtrl+I  Italic\nCtrl+K  Link\nCtrl+P  Print\nCtrl+= / Ctrl+-  Zoom\nCtrl+0  Reset Zoom\nCtrl+Shift+= / Ctrl+Shift+-  Text Width\nF11 / Super+F  Fullscreen\nCtrl+?  Shortcuts"
+            text: "Ctrl+S  Save\nCtrl+Shift+S  Save As\nCtrl+O  Open\nCtrl+N  New Window\nCtrl+F  Find\nCtrl+H  Find and Replace\nCtrl+B  Bold\nCtrl+I  Italic\nCtrl+K  Link\nCtrl+P  Print\nCtrl+= / Ctrl+-  Zoom\nCtrl+0  Reset Zoom\nCtrl+{ / Ctrl+}  Text Width\nCtrl+|  Reset Width\nF11 / Super+F  Fullscreen\nCtrl+?  Shortcuts"
             lineHeight: 1.5
         }
     }
