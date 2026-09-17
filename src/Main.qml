@@ -818,7 +818,8 @@ ApplicationWindow {
                     var returnKey = event.key === Qt.Key_Return || event.key === Qt.Key_Enter;
                     var commandModifier = event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier);
                     if (returnKey && !commandModifier) {
-                        smartReturn(event.modifiers & Qt.ShiftModifier);
+                        // TXT mode: plain single newline, no paragraph gap or list continuation.
+                        smartReturn((event.modifiers & Qt.ShiftModifier) || !backend.markdownEnabled);
                         event.accepted = true;
                     } else if (!commandModifier && event.key === Qt.Key_Backspace
                                && deleteParagraphBreakBehindCursor()) {
