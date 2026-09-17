@@ -916,7 +916,8 @@ ApplicationWindow {
             font.pixelSize: win.scaledSize(11)
         }
 
-        // MD / TXT mode switch — iPhone-style toggle; the knob shows the active mode.
+        // MD / TXT mode switch — iPhone-style toggle painted from 5 live theme-palette
+        // colors, so it recolors whenever the Omarchy theme changes.
         Item {
             id: modeToggle
             anchors.top: parent.top
@@ -929,34 +930,46 @@ ApplicationWindow {
             z: 11
 
             readonly property bool md: backend.markdownEnabled
+            readonly property var pal: backend.themePalette
+            readonly property color cTrackBg:     pal[8]   // toggle background
+            readonly property color cTrackBorder: pal[3]   // toggle border
+            readonly property color cKnobBorder:  pal[5]   // knob (actual toggle) border
+            readonly property color cMd:          pal[4]   // ".md" label
+            readonly property color cTxt:         pal[1]   // ".txt" label
+            readonly property color cKnobBg:      pal[0]   // knob fill (keeps label legible)
 
             Rectangle {
                 id: track
-                width: win.scaledSize(58)
-                height: win.scaledSize(26)
+                width: win.scaledSize(64)
+                height: win.scaledSize(28)
                 radius: height / 2
-                color: modeToggle.md ? backend.themeAccent : win.mutedColor
-                opacity: modeToggle.md ? 0.9 : 0.5
-                Behavior on color { ColorAnimation { duration: 150 } }
-                Behavior on opacity { NumberAnimation { duration: 150 } }
+                color: modeToggle.cTrackBg
+                border.color: modeToggle.cTrackBorder
+                border.width: Math.max(1, win.scaledSize(2))
+                Behavior on color { ColorAnimation { duration: 160 } }
+                Behavior on border.color { ColorAnimation { duration: 160 } }
 
                 Rectangle {
                     id: knob
-                    width: win.scaledSize(30)
-                    height: parent.height - win.scaledSize(4)
+                    width: win.scaledSize(34)
+                    height: parent.height - win.scaledSize(6)
                     radius: height / 2
-                    y: win.scaledSize(2)
-                    x: modeToggle.md ? parent.width - width - win.scaledSize(2) : win.scaledSize(2)
-                    color: win.pageColor
-                    Behavior on x { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+                    y: win.scaledSize(3)
+                    x: modeToggle.md ? parent.width - width - win.scaledSize(3) : win.scaledSize(3)
+                    color: modeToggle.cKnobBg
+                    border.color: modeToggle.cKnobBorder
+                    border.width: Math.max(1, win.scaledSize(2))
+                    Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                    Behavior on border.color { ColorAnimation { duration: 160 } }
 
                     Text {
                         anchors.centerIn: parent
-                        text: modeToggle.md ? "md" : "txt"
-                        color: win.textColor
+                        text: modeToggle.md ? ".md" : ".txt"
+                        color: modeToggle.md ? modeToggle.cMd : modeToggle.cTxt
                         font.family: "iA Writer Mono S"
-                        font.pixelSize: win.scaledSize(10)
-                        font.weight: Font.DemiBold
+                        font.pixelSize: win.scaledSize(11)
+                        font.weight: Font.Bold
+                        Behavior on color { ColorAnimation { duration: 160 } }
                     }
                 }
             }

@@ -606,6 +606,11 @@ void Backend::loadOmarchyTheme() {
     m_themeAccent = m_darkMode ? QStringLiteral("#5584aa") : QStringLiteral("#2077b2");
     m_themeSelection = m_darkMode ? QStringLiteral("#186a9a") : QStringLiteral("#2077b2");
 
+    // 16-slot ANSI palette (color0..color15); defaults keep the toggle visible
+    // even when a theme omits the palette. Overwritten by colors.toml below.
+    QList<QString> palette(16, m_themeForeground);
+    palette[0] = m_themeBackground;
+
     const QString colorsPath = QDir::homePath()
         + QStringLiteral("/.local/state/omarchy/current/theme/colors.toml");
     QString themeMode;
@@ -638,8 +643,20 @@ void Backend::loadOmarchyTheme() {
                 m_themeAccent = value;
             else if (key == QStringLiteral("selection"))
                 m_themeSelection = value;
+            else if (key == QStringLiteral("selection_background"))
+                m_themeSelection = value;
+            else if (key.startsWith(QStringLiteral("color"))) {
+                bool ok = false;
+                const int idx = key.mid(5).toInt(&ok);
+                if (ok && idx >= 0 && idx < palette.size())
+                    palette[idx] = value;
+            }
         }
     }
+
+    m_themePalette.clear();
+    for (const QString &color : palette)
+        m_themePalette.append(color);
 
     bool themeModeKnown = false;
     bool themeIsDark = m_darkMode;
