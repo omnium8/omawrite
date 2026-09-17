@@ -936,41 +936,58 @@ ApplicationWindow {
             readonly property color cKnobBorder:  pal[5]   // knob (actual toggle) border
             readonly property color cMd:          pal[4]   // ".md" label
             readonly property color cTxt:         pal[1]   // ".txt" label
-            readonly property color cKnobBg:      pal[0]   // knob fill (keeps label legible)
+            readonly property color cKnobBg:      pal[0]   // knob fill
+            readonly property int inset: win.scaledSize(3)
 
             Rectangle {
                 id: track
-                width: win.scaledSize(64)
-                height: win.scaledSize(28)
+                width: win.scaledSize(62)
+                height: win.scaledSize(30)
                 radius: height / 2
-                color: modeToggle.cTrackBg
+                color: "transparent"
                 border.color: modeToggle.cTrackBorder
                 border.width: Math.max(1, win.scaledSize(2))
-                Behavior on color { ColorAnimation { duration: 160 } }
                 Behavior on border.color { ColorAnimation { duration: 160 } }
 
+                // Translucent fill so the toggle reads softly against the page.
+                Rectangle {
+                    anchors.fill: parent
+                    anchors.margins: track.border.width
+                    radius: parent.radius
+                    color: modeToggle.cTrackBg
+                    opacity: 0.55
+                    Behavior on color { ColorAnimation { duration: 160 } }
+                }
+
+                // Mode label sits on the side opposite the knob.
+                Text {
+                    id: modeLabel
+                    anchors.verticalCenter: parent.verticalCenter
+                    x: (modeToggle.md ? (track.width - knob.width) / 2
+                                      : (track.width + knob.width) / 2) - width / 2
+                    text: modeToggle.md ? ".md" : ".txt"
+                    color: modeToggle.md ? modeToggle.cMd : modeToggle.cTxt
+                    font.family: "iA Writer Mono S"
+                    font.pixelSize: win.scaledSize(10)
+                    font.weight: Font.Bold
+                    Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
+                    Behavior on color { ColorAnimation { duration: 160 } }
+                }
+
+                // Circular knob, iPhone-style.
                 Rectangle {
                     id: knob
-                    width: win.scaledSize(34)
-                    height: parent.height - win.scaledSize(6)
-                    radius: height / 2
-                    y: win.scaledSize(3)
-                    x: modeToggle.md ? parent.width - width - win.scaledSize(3) : win.scaledSize(3)
+                    width: parent.height - modeToggle.inset * 2
+                    height: width
+                    radius: width / 2
+                    y: modeToggle.inset
+                    x: modeToggle.md ? parent.width - width - modeToggle.inset
+                                     : modeToggle.inset
                     color: modeToggle.cKnobBg
                     border.color: modeToggle.cKnobBorder
                     border.width: Math.max(1, win.scaledSize(2))
                     Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                     Behavior on border.color { ColorAnimation { duration: 160 } }
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: modeToggle.md ? ".md" : ".txt"
-                        color: modeToggle.md ? modeToggle.cMd : modeToggle.cTxt
-                        font.family: "iA Writer Mono S"
-                        font.pixelSize: win.scaledSize(11)
-                        font.weight: Font.Bold
-                        Behavior on color { ColorAnimation { duration: 160 } }
-                    }
                 }
             }
 
