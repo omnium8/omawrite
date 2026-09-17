@@ -26,9 +26,16 @@ ApplicationWindow {
     // the app at the sizes it was designed around.
     readonly property real textScale: backend.textScale
     readonly property int editorFontPixelSize: Math.max(1, Math.round(scaledSize(20) * zoom))
-    readonly property int editorWidth: Math.min(
-        Math.round(writerFontMetrics.averageCharacterWidth * 65),
-        Math.max(360, width - Math.round(writerFontMetrics.averageCharacterWidth * 20)))
+    // Multiplier on the default text-column width, driven by Ctrl+Shift+= / Ctrl+Shift+-.
+    property real textWidthFactor: 1.0
+    readonly property int editorWidth: {
+        var base = Math.min(
+            Math.round(writerFontMetrics.averageCharacterWidth * 65),
+            Math.max(360, width - Math.round(writerFontMetrics.averageCharacterWidth * 20)));
+        var maxW = Math.round(width * 0.9);
+        var minW = Math.min(base, 360);
+        return Math.max(minW, Math.min(maxW, Math.round(base * textWidthFactor)));
+    }
     property bool closeConfirmed: false
     property bool searchOpen: false
     property bool searchUpdating: false
@@ -94,6 +101,15 @@ ApplicationWindow {
 
     function zoomReset() {
         win.zoom = 1.0;
+    }
+
+    // Widen/narrow the text column in 10% steps; the editorWidth binding caps it at 90% of the window.
+    function widthBy(delta) {
+        win.textWidthFactor = Math.min(4.0, Math.max(0.5, Math.round((win.textWidthFactor + delta) * 10) / 10));
+    }
+
+    function widthReset() {
+        win.textWidthFactor = 1.0;
     }
 
     function toggleFullScreen() {
@@ -266,6 +282,24 @@ ApplicationWindow {
         onActivated: win.zoomReset()
     }
 
+    Shortcut {
+        sequences: ["Ctrl+Shift++", "Ctrl+Shift+="]
+        context: Qt.ApplicationShortcut
+        onActivated: win.widthBy(0.1)
+    }
+
+    Shortcut {
+        sequence: "Ctrl+Shift+-"
+        context: Qt.ApplicationShortcut
+        onActivated: win.widthBy(-0.1)
+    }
+
+    Shortcut {
+        sequence: "Ctrl+Shift+0"
+        context: Qt.ApplicationShortcut
+        onActivated: win.widthReset()
+    }
+
     Connections {
         target: backend
 
@@ -360,7 +394,7 @@ ApplicationWindow {
         standardButtons: Dialog.Close
         anchors.centerIn: parent
         contentItem: Label {
-            text: "Ctrl+S  Save\nCtrl+Shift+S  Save As\nCtrl+O  Open\nCtrl+N  New Window\nCtrl+F  Find\nCtrl+H  Find and Replace\nCtrl+B  Bold\nCtrl+I  Italic\nCtrl+K  Link\nCtrl+P  Print\nCtrl+= / Ctrl+-  Zoom\nCtrl+0  Reset Zoom\nF11 / Super+F  Fullscreen\nCtrl+?  Shortcuts"
+            text: "Ctrl+S  Save\nCtrl+Shift+S  Save As\nCtrl+O  Open\nCtrl+N  New Window\nCtrl+F  Find\nCtrl+H  Find and Replace\nCtrl+B  Bold\nCtrl+I  Italic\nCtrl+K  Link\nCtrl+P  Print\nCtrl+= / Ctrl+-  Zoom\nCtrl+0  Reset Zoom\nCtrl+Shift+= / Ctrl+Shift+-  Text Width\nF11 / Super+F  Fullscreen\nCtrl+?  Shortcuts"
             lineHeight: 1.5
         }
     }
