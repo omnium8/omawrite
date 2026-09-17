@@ -25,7 +25,7 @@ ApplicationWindow {
     // `omarchy display text size` drives) anchored so its 12px default leaves
     // the app at the sizes it was designed around.
     readonly property real textScale: backend.textScale
-    readonly property int editorFontPixelSize: scaledSize(20)
+    readonly property int editorFontPixelSize: Math.max(1, Math.round(scaledSize(20) * zoom))
     readonly property int editorWidth: Math.min(
         Math.round(writerFontMetrics.averageCharacterWidth * 65),
         Math.max(360, width - Math.round(writerFontMetrics.averageCharacterWidth * 20)))
@@ -38,6 +38,8 @@ ApplicationWindow {
     property string pendingAction: ""
     property bool replaceOpen: false
     property bool awaitingPendingSave: false
+    // Per-window editor zoom, driven by Ctrl+= / Ctrl+- / Ctrl+0 (terminal-style).
+    property real zoom: 1.0
 
     Material.theme: darkMode ? Material.Dark : Material.Light
     Material.accent: backend.themeAccent
@@ -83,6 +85,15 @@ ApplicationWindow {
     // Every hardcoded size in the interface is expressed at text scale 1.
     function scaledSize(pixels) {
         return Math.max(1, Math.round(pixels * win.textScale));
+    }
+
+    // Terminal-style zoom of the editor text, in 10% steps, clamped 50%–400%.
+    function zoomBy(delta) {
+        win.zoom = Math.min(4.0, Math.max(0.5, Math.round((win.zoom + delta) * 10) / 10));
+    }
+
+    function zoomReset() {
+        win.zoom = 1.0;
     }
 
     function toggleFullScreen() {
@@ -237,6 +248,24 @@ ApplicationWindow {
         onActivated: win.moveSearch(1)
     }
 
+    Shortcut {
+        sequences: ["Ctrl++", "Ctrl+="]
+        context: Qt.ApplicationShortcut
+        onActivated: win.zoomBy(0.1)
+    }
+
+    Shortcut {
+        sequence: "Ctrl+-"
+        context: Qt.ApplicationShortcut
+        onActivated: win.zoomBy(-0.1)
+    }
+
+    Shortcut {
+        sequence: "Ctrl+0"
+        context: Qt.ApplicationShortcut
+        onActivated: win.zoomReset()
+    }
+
     Connections {
         target: backend
 
@@ -331,7 +360,7 @@ ApplicationWindow {
         standardButtons: Dialog.Close
         anchors.centerIn: parent
         contentItem: Label {
-            text: "Ctrl+S  Save\nCtrl+Shift+S  Save As\nCtrl+O  Open\nCtrl+N  New Window\nCtrl+F  Find\nCtrl+H  Find and Replace\nCtrl+B  Bold\nCtrl+I  Italic\nCtrl+K  Link\nCtrl+P  Print\nF11 / Super+F  Fullscreen\nCtrl+?  Shortcuts"
+            text: "Ctrl+S  Save\nCtrl+Shift+S  Save As\nCtrl+O  Open\nCtrl+N  New Window\nCtrl+F  Find\nCtrl+H  Find and Replace\nCtrl+B  Bold\nCtrl+I  Italic\nCtrl+K  Link\nCtrl+P  Print\nCtrl+= / Ctrl+-  Zoom\nCtrl+0  Reset Zoom\nF11 / Super+F  Fullscreen\nCtrl+?  Shortcuts"
             lineHeight: 1.5
         }
     }
