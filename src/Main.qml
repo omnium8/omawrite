@@ -26,15 +26,19 @@ ApplicationWindow {
     // the app at the sizes it was designed around.
     readonly property real textScale: backend.textScale
     readonly property int editorFontPixelSize: Math.max(1, Math.round(scaledSize(20) * zoom))
-    // Multiplier on the default text-column width, driven by Ctrl+Shift+= / Ctrl+Shift+-.
-    property real textWidthFactor: 1.0
+    // The upstream default column width (~65 chars, or the window minus a margin when narrow).
+    readonly property int defaultEditorWidth: Math.min(
+        Math.round(writerFontMetrics.averageCharacterWidth * 65),
+        Math.max(360, width - Math.round(writerFontMetrics.averageCharacterWidth * 20)))
+    // -1 follows the upstream default; otherwise an explicit fraction of the window width,
+    // driven by Ctrl+Shift+= / Ctrl+Shift+- and clamped to 30%–90% of the window.
+    property real widthFraction: -1
     readonly property int editorWidth: {
-        var base = Math.min(
-            Math.round(writerFontMetrics.averageCharacterWidth * 65),
-            Math.max(360, width - Math.round(writerFontMetrics.averageCharacterWidth * 20)));
+        if (widthFraction < 0)
+            return defaultEditorWidth;
         var maxW = Math.round(width * 0.9);
-        var minW = Math.min(base, 360);
-        return Math.max(minW, Math.min(maxW, Math.round(base * textWidthFactor)));
+        var minW = Math.min(defaultEditorWidth, Math.round(width * 0.3));
+        return Math.max(minW, Math.min(maxW, Math.round(width * widthFraction)));
     }
     property bool closeConfirmed: false
     property bool searchOpen: false
@@ -103,13 +107,15 @@ ApplicationWindow {
         win.zoom = 1.0;
     }
 
-    // Widen/narrow the text column in 10% steps; the editorWidth binding caps it at 90% of the window.
+    // Widen/narrow the text column in 5%-of-window steps, clamped to 30%–90%.
+    // Starts from wherever the upstream default currently sits.
     function widthBy(delta) {
-        win.textWidthFactor = Math.min(4.0, Math.max(0.5, Math.round((win.textWidthFactor + delta) * 10) / 10));
+        var cur = win.widthFraction < 0 ? win.defaultEditorWidth / win.width : win.widthFraction;
+        win.widthFraction = Math.min(0.9, Math.max(0.3, Math.round((cur + delta) * 100) / 100));
     }
 
     function widthReset() {
-        win.textWidthFactor = 1.0;
+        win.widthFraction = -1;
     }
 
     function toggleFullScreen() {
@@ -285,13 +291,13 @@ ApplicationWindow {
     Shortcut {
         sequences: ["Ctrl+Shift++", "Ctrl+Shift+="]
         context: Qt.ApplicationShortcut
-        onActivated: win.widthBy(0.1)
+        onActivated: win.widthBy(0.05)
     }
 
     Shortcut {
         sequence: "Ctrl+Shift+-"
         context: Qt.ApplicationShortcut
-        onActivated: win.widthBy(-0.1)
+        onActivated: win.widthBy(-0.05)
     }
 
     Shortcut {
