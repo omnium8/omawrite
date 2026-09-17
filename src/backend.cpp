@@ -169,6 +169,15 @@ void Backend::setTextScale(qreal textScale) {
     emit textScaleChanged();
 }
 
+void Backend::setMarkdownEnabled(bool enabled) {
+    if (m_markdownEnabled == enabled)
+        return;
+    m_markdownEnabled = enabled;
+    if (m_highlighter)
+        m_highlighter->setHighlightingEnabled(enabled);
+    emit markdownEnabledChanged();
+}
+
 void Backend::attachDocument(QObject *textDocument) {
     auto *quickDocument = qobject_cast<QQuickTextDocument *>(textDocument);
     if (!quickDocument || !quickDocument->textDocument()) {
@@ -184,6 +193,7 @@ void Backend::attachDocument(QObject *textDocument) {
     m_highlighter = new MarkdownHighlighter(m_document);
     m_highlighter->setDarkMode(m_darkMode);
     m_highlighter->setColors(m_themeBackground, m_themeForeground, m_themeAccent);
+    m_highlighter->setHighlightingEnabled(m_markdownEnabled);
 
     connect(m_document, &QTextDocument::contentsChange, this,
             [this](int position, int, int charsAdded) {
@@ -367,7 +377,7 @@ bool Backend::editorTextChanged() {
 
 QVariantList Backend::hiddenRangesAt(int position) const {
     QVariantList ranges;
-    if (!m_document)
+    if (!m_document || !m_markdownEnabled)
         return ranges;
 
     const QTextBlock block =

@@ -915,6 +915,58 @@ ApplicationWindow {
             font.pixelSize: win.scaledSize(11)
         }
 
+        // MD / TXT mode switch — iPhone-style toggle; the knob shows the active mode.
+        Item {
+            id: modeToggle
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.topMargin: 14
+            anchors.rightMargin: 16
+            width: track.width
+            height: track.height
+            visible: !win.searchOpen
+            z: 11
+
+            readonly property bool md: backend.markdownEnabled
+
+            Rectangle {
+                id: track
+                width: win.scaledSize(58)
+                height: win.scaledSize(26)
+                radius: height / 2
+                color: modeToggle.md ? backend.themeAccent : win.mutedColor
+                opacity: modeToggle.md ? 0.9 : 0.5
+                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on opacity { NumberAnimation { duration: 150 } }
+
+                Rectangle {
+                    id: knob
+                    width: win.scaledSize(30)
+                    height: parent.height - win.scaledSize(4)
+                    radius: height / 2
+                    y: win.scaledSize(2)
+                    x: modeToggle.md ? parent.width - width - win.scaledSize(2) : win.scaledSize(2)
+                    color: win.pageColor
+                    Behavior on x { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: modeToggle.md ? "md" : "txt"
+                        color: win.textColor
+                        font.family: "iA Writer Mono S"
+                        font.pixelSize: win.scaledSize(10)
+                        font.weight: Font.DemiBold
+                    }
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: backend.markdownEnabled = !backend.markdownEnabled
+            }
+        }
+
 
         Pane {
             anchors.top: parent.top

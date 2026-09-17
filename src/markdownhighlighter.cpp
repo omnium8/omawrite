@@ -40,6 +40,13 @@ void MarkdownHighlighter::setSearch(const QString &query, int currentMatchStart)
     rehighlight();
 }
 
+void MarkdownHighlighter::setHighlightingEnabled(bool enabled) {
+    if (m_enabled == enabled)
+        return;
+    m_enabled = enabled;
+    rehighlight();
+}
+
 void MarkdownHighlighter::rebuildFormats() {
     const QColor marker = m_darkMode ? QColor(QStringLiteral("#4f525a"))
                                      : QColor(QStringLiteral("#aeb1b5"));
@@ -104,7 +111,7 @@ void MarkdownHighlighter::rebuildFormats() {
 }
 
 void MarkdownHighlighter::highlightBlock(const QString &text) {
-    if (!text.isEmpty()) {
+    if (m_enabled && !text.isEmpty()) {
         highlightMarkers(text);
         if (text.contains(QLatin1Char('`')) || text.contains(QLatin1Char('*'))
             || text.contains(QLatin1Char('_')) || text.contains(QLatin1Char('['))) {

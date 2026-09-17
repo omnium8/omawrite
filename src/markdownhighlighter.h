@@ -13,6 +13,7 @@ public:
     void setDarkMode(bool darkMode);
     void setColors(const QString &background, const QString &foreground, const QString &accent);
     void setSearch(const QString &query, int currentMatchStart);
+    void setHighlightingEnabled(bool enabled);
 
     struct Span {
         int start;
@@ -42,6 +43,7 @@ private:
     void highlightSearch(const QString &text);
 
     bool m_darkMode = true;
+    bool m_enabled = true;
     QString m_customBackground;
     QString m_customForeground;
     QString m_customAccent;
