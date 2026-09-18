@@ -938,12 +938,12 @@ ApplicationWindow {
             readonly property color cMd:          pal[4]   // ".md" label
             readonly property color cTxt:         pal[1]   // ".txt" label
             readonly property color cKnobBg:      pal[0]   // knob fill
-            readonly property int inset: win.scaledSize(3)
+            readonly property int inset: win.scaledSize(2)
 
             Rectangle {
                 id: track
-                width: win.scaledSize(62)
-                height: win.scaledSize(30)
+                width: win.scaledSize(37)
+                height: win.scaledSize(18)
                 radius: height / 2
                 color: "transparent"
                 border.color: modeToggle.cTrackBorder
@@ -969,7 +969,7 @@ ApplicationWindow {
                     text: modeToggle.md ? ".md" : ".txt"
                     color: modeToggle.md ? modeToggle.cMd : modeToggle.cTxt
                     font.family: "iA Writer Mono S"
-                    font.pixelSize: win.scaledSize(10)
+                    font.pixelSize: win.scaledSize(6)
                     font.weight: Font.Normal
                     Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                     Behavior on color { ColorAnimation { duration: 160 } }
