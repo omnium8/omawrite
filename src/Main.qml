@@ -928,6 +928,7 @@ ApplicationWindow {
             height: track.height
             visible: !win.searchOpen
             z: 11
+            opacity: 0.55   // understated, matching the footer icons
 
             readonly property bool md: backend.markdownEnabled
             readonly property var pal: backend.themePalette
@@ -946,7 +947,7 @@ ApplicationWindow {
                 radius: height / 2
                 color: "transparent"
                 border.color: modeToggle.cTrackBorder
-                border.width: Math.max(1, win.scaledSize(2))
+                border.width: Math.max(1, win.scaledSize(1))
                 Behavior on border.color { ColorAnimation { duration: 160 } }
 
                 // Translucent fill so the toggle reads softly against the page.
@@ -969,7 +970,7 @@ ApplicationWindow {
                     color: modeToggle.md ? modeToggle.cMd : modeToggle.cTxt
                     font.family: "iA Writer Mono S"
                     font.pixelSize: win.scaledSize(10)
-                    font.weight: Font.Bold
+                    font.weight: Font.Normal
                     Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                     Behavior on color { ColorAnimation { duration: 160 } }
                 }
@@ -985,7 +986,7 @@ ApplicationWindow {
                                      : modeToggle.inset
                     color: modeToggle.cKnobBg
                     border.color: modeToggle.cKnobBorder
-                    border.width: Math.max(1, win.scaledSize(2))
+                    border.width: Math.max(1, win.scaledSize(1))
                     Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                     Behavior on border.color { ColorAnimation { duration: 160 } }
                 }
