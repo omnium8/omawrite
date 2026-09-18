@@ -966,7 +966,7 @@ ApplicationWindow {
                     anchors.verticalCenter: parent.verticalCenter
                     x: (modeToggle.md ? (track.width - knob.width) / 2
                                       : (track.width + knob.width) / 2) - width / 2
-                    text: modeToggle.md ? ".md" : ".txt"
+                    text: modeToggle.md ? "md" : "txt"
                     color: modeToggle.md ? modeToggle.cMd : modeToggle.cTxt
                     font.family: "iA Writer Mono S"
                     font.pixelSize: win.scaledSize(8)
