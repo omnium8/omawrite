@@ -969,7 +969,7 @@ ApplicationWindow {
                     text: modeToggle.md ? ".md" : ".txt"
                     color: modeToggle.md ? modeToggle.cMd : modeToggle.cTxt
                     font.family: "iA Writer Mono S"
-                    font.pixelSize: win.scaledSize(6)
+                    font.pixelSize: win.scaledSize(8)
                     font.weight: Font.Normal
                     Behavior on x { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
                     Behavior on color { ColorAnimation { duration: 160 } }
